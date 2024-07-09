@@ -92,7 +92,7 @@ function buildWalletsConfig(
     const chainId = Number(chainIdStr) as ChainId;
     const chainName = coalesceChainName(chainId);
 
-    const chainWallets = [];
+    const chainWallets: { privateKey: string; tokens: string[] }[] = [];
     if (isEVMChain(chainId)) {
       for (const key of keys) {
         chainWallets.push({

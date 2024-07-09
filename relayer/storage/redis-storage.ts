@@ -179,13 +179,14 @@ export class RedisStorage implements Storage {
     };
   }
 
-  startWorker(handleJob: onJobHandler) {
+  async startWorker(handleJob: onJobHandler) {
     this.logger?.debug(
       `Starting worker for queue: ${this.opts.queueName}. Prefix: ${this.prefix}.`,
     );
 
     // Use user provided backoff function if available, otherwise use xlabs default
-    let backOffFunction = undefined;
+    let backOffFunction: (attemptsMade: number) => number;
+
     if (this.opts.exponentialBackoff?.backOffFn) {
       backOffFunction = this.opts.exponentialBackoff.backOffFn;
     } else {
@@ -211,7 +212,7 @@ export class RedisStorage implements Storage {
     this.worker = new Worker(
       this.opts.queueName,
       async job => {
-        let parsedVaa = job.data?.parsedVaa;
+        const parsedVaa = job.data?.parsedVaa;
         if (parsedVaa) {
           this.logger?.debug(`Starting job: ${job.id}`, {
             emitterChain: parsedVaa.emitterChain,
@@ -249,7 +250,7 @@ export class RedisStorage implements Storage {
     );
     this.workerId = this.worker.id;
 
-    this.spawnGaugeUpdateWorker();
+    await this.spawnGaugeUpdateWorker();
   }
 
   async stopWorker() {
@@ -282,7 +283,7 @@ export class RedisStorage implements Storage {
   private vaaId(vaa: ParsedVaa): string {
     const emitterAddress = vaa.emitterAddress.toString("hex");
     const hash = vaa.hash.toString("base64").substring(0, 5);
-    let sequence = vaa.sequence.toString();
+    const sequence = vaa.sequence.toString();
     return `${vaa.emitterChain}/${emitterAddress}/${sequence}/${hash}`;
   }
 

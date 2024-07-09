@@ -167,7 +167,7 @@ const defaultSupportedChains = {
   },
 };
 
-function pick<T extends Object, Prop extends string | number | symbol>(
+function pick<T extends object, Prop extends string | number | symbol>(
   obj: T,
   keys: Prop[],
 ): Pick<T, Prop & keyof T> {
@@ -250,7 +250,7 @@ async function buildProviders(
         providers.solana = endpoints.map(url => new solana.Connection(url));
       } else if (chainId === CHAIN_ID_SUI) {
         providers.sui = endpoints.map((url, i) => {
-          let conn = new sui.Connection({
+          const conn = new sui.Connection({
             fullnode: url,
             faucet: faucets?.at(i) || faucets?.at(0), // try to map to the same index, otherwise use the first (if user only provided one faucet but multiple endpoints)
             websocket: websockets?.at(i) || websockets?.at(0), // same as above
@@ -261,6 +261,7 @@ async function buildProviders(
         const seiProviderPromises = endpoints.map(url =>
           getCosmWasmClient(url),
         );
+        // @ts-ignore comment
         providers.sei = await Promise.all(seiProviderPromises);
       } else {
         providers.untyped[chainId] = endpoints.map(c => ({ rpcUrl: c }));

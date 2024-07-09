@@ -8,11 +8,12 @@ import {
   SignedVaa,
 } from "@certusone/wormhole-sdk";
 import { bech32 } from "bech32";
-import { deriveWormholeEmitterKey } from "@certusone/wormhole-sdk/lib/cjs/solana/wormhole/index.js";
+// import { deriveWormholeEmitterKey } from "@certusone/wormhole-sdk/lib/cjs/solana/wormhole/index.js";
 import { zeroPad } from "ethers/lib/utils.js";
 import { ParsedVaaWithBytes } from "./application.js";
 import { ethers } from "ethers";
 import { inspect } from "util";
+import { PublicKey } from "@solana/web3.js";
 
 export type MakeOptional<T1, T2> = Omit<T1, keyof T2> &
   Partial<Omit<T1, keyof Omit<T1, keyof T2>>> &
@@ -26,9 +27,12 @@ export function encodeEmitterAddress(
     chainId === wormholeSdk.CHAIN_ID_SOLANA ||
     chainId === wormholeSdk.CHAIN_ID_PYTHNET
   ) {
-    return deriveWormholeEmitterKey(emitterAddressStr)
-      .toBuffer()
-      .toString("hex");
+    return Buffer.from(new PublicKey(emitterAddressStr).toBytes()).toString(
+      "hex",
+    );
+    // return deriveWormholeEmitterKey(emitterAddressStr)
+    //   .toBuffer()
+    //   .toString("hex");
   }
   if (wormholeSdk.isCosmWasmChain(chainId)) {
     return Buffer.from(

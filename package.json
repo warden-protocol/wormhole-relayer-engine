@@ -1,16 +1,20 @@
 {
-  "name": "@wormhole-foundation/relayer-engine",
+  "name": "@warden/wormhole-relayer-engine",
   "version": "0.3.2",
   "description": "Relayer Engine",
+  "author": "Joe Howarth, xLabs Inc.",
+  "license": "Apache-2.0",
   "type": "module",
-  "main": "lib/cjs/relayer/index.js",
-  "types": "lib/cjs/relayer/index.d.ts",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "redis": "docker run --rm -p 6379:6379 --name redis-docker -d redis",
     "test-redis": "docker run --rm -p 6301:6379 --name relayer-engine-test -d redis; npm run test; docker kill relayer-engine-test",
     "test": "jest --silent=false",
     "test-watch": "jest --silent=false --watch",
-    "build": "tsc --build ./tsconfig.cjs.json ./tsconfig.esm.json && bin/create-package.json.sh",
+    "build": "tsc --build --clean && tsc --build",
     "watch": "tsc --watch --project ./tsconfig.esm.json",
     "typecheck": "tsc --build ./tsconfig.esm.json ./test/tsconfig.json",
     "prettier": "prettier --write $(git diff main --name-only --diff-filter u | grep '.ts$' | xargs)",
@@ -18,20 +22,6 @@
     "testnet-spy": "docker run --platform=linux/amd64 -p 7073:7073 --entrypoint /guardiand ghcr.io/wormhole-foundation/guardiand:latest spy --nodeKey /node.key --spyRPC \"[::]:7073\" --network /wormhole/testnet/2/1 --bootstrap '/dns4/t-guardian-01.testnet.xlabs.xyz/udp/8999/quic/p2p/12D3KooWCW3LGUtkCVkHZmVSZHzL3C4WRKWfqAiJPz1NR7dT9Bxh,/dns4/t-guardian-02.testnet.xlabs.xyz/udp/8999/quic/p2p/12D3KooWJXA6goBCiWM8ucjzc4jVUBSqL9Rri6UpjHbkMPErz5zK'",
     "prepare": "npm run build"
   },
-  "exports": {
-    ".": {
-      "require": "./lib/cjs/relayer/index.js",
-      "import": "./lib/esm/relayer/index.js",
-      "default": "./lib/esm/relayer/index.js"
-    },
-    "./*": {
-      "require": "./lib/cjs/relayer/*.js",
-      "import": "./lib/esm/relayer/*.js",
-      "default": "./lib/esm/relayer/*.js"
-    }
-  },
-  "author": "Joe Howarth, xLabs Inc.",
-  "license": "Apache-2.0",
   "dependencies": {
     "@bull-board/api": "^5.8.1",
     "@bull-board/koa": "^5.8.1",
