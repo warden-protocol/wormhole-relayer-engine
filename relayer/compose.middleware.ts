@@ -17,13 +17,13 @@ export function compose<T extends Context>(
   return async function (ctx: T, next: Next = () => {}): Promise<void> {
     async function callNext(i: number): Promise<any> {
       if (i === middleware.length) {
-        return next();
+        return await next();
       }
       let fn = middleware[i];
-      return fn(ctx, callNext.bind(null, i + 1));
+      return await fn(ctx, callNext.bind(null, i + 1));
     }
 
-    return callNext(0);
+    return await callNext(0);
   };
 }
 
@@ -38,13 +38,13 @@ export function composeError<T extends Context>(
   ): Promise<void> {
     async function callNext(i: number): Promise<any> {
       if (i === middleware.length) {
-        return next();
+        return await next();
       }
       const fn = middleware[i];
-      return fn(err, ctx, callNext.bind(null, i + 1));
+      return await fn(err, ctx, callNext.bind(null, i + 1));
     }
 
-    return callNext(0);
+    return await callNext(0);
   };
 }
 
